@@ -1,11 +1,11 @@
-#[path = "database.rs"]
-mod database;
+#[path = "db.rs"]
+mod db;
 
-#[path = "util.rs"]
-mod util;
+#[path = "dbs.rs"]
+mod dbs;
 
-use database::DB;
-use util::sub_paths;
+use db::DB;
+use dbs::DBs;
 
 use futures::executor::block_on;
 
@@ -34,15 +34,21 @@ fn db_url(config: &Config, db_name: Option<&str>) -> String {
     }
 }
 
+async fn create_db(name: &str, pool: &Pool<MySql>) -> Result<MySqlQueryResult, Error> {
+    let query = format!("CREATE DATABASE IF NOT EXISTS {name}");
+    sqlx::query(&query).execute(pool).await
+}
+
 async fn create_pool(config: &Config, db_name: Option<&str>) -> Result<Pool<MySql>, Error> {
     let url = db_url(config, db_name);
 
     MySqlPool::connect(&url).await
 }
 
-fn create_pools(config: &Config, dbs: &Vec<DB>, pool: &Pool<MySql>) -> Vec::<Pool<MySql>> {
+fn create_pools(config: &Config, dbs: &DBs, pool: &Pool<MySql>) -> Vec::<Pool<MySql>> {
     let mut pools: Vec::<Pool<MySql>>  = Vec::new();
 
+    let dbs = &dbs.dbs;
     for db in dbs {
         match block_on(create_db(&db.name, &pool)) {
             Ok(_) => {
@@ -60,26 +66,10 @@ fn create_pools(config: &Config, dbs: &Vec<DB>, pool: &Pool<MySql>) -> Vec::<Poo
     pools
 }
 
-async fn create_db(name: &str, pool: &Pool<MySql>) -> Result<MySqlQueryResult, Error> {
-    let query = format!("CREATE DATABASE IF NOT EXISTS {name}");
-    sqlx::query(&query).execute(pool).await
-}
-
 pub fn setup(config: Config) {
-    let db_name_paths = match sub_paths("./src/db/") {
-        Ok(paths) => paths,
-        Err(e) => {
-            panic!("{e}");
-        }
-    };
+    let dbs = DBs::new();
 
-    let mut dbs: Vec<DB> = Vec::new();
-
-    for db_name_path in db_name_paths {
-        dbs.push(DB::new(&db_name_path))
-    }
-
-    print_db(&dbs);
+    //dbs.print_db();
 
     let pool_future_result = create_pool(&config, None);
 
@@ -88,18 +78,5 @@ pub fn setup(config: Config) {
             let pools = create_pools(&config, &dbs, &pool);
         },
         Err(e) => println!("Pool could't be created: {e}")
-    }
-}
-
-fn print_db(dbs: &Vec<DB> ) {
-    for db in dbs {
-        println!("{}", db.name);
-
-        let tables = &db.tables;
-
-        for table in tables {
-            println!("{}", table.name);
-            println!("{}", table.path);
-        }
     }
 }
