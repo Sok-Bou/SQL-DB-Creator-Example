@@ -71,7 +71,7 @@ async fn create_db(name: &str, pool: &Pool<MySql>) -> Result<MySqlQueryResult, E
     sqlx::query(&query).execute(pool).await
 }
 
-pub fn setup(db_type: DBType, config: Option<Config>) {
+pub fn setup(db_type: DBType, config: Config) {
     let db_name_paths = match sub_paths("./src/db/") {
         Ok(paths) => paths,
         Err(e) => {
@@ -85,21 +85,27 @@ pub fn setup(db_type: DBType, config: Option<Config>) {
         dbs.push(DB::new(&db_name_path))
     }
 
+    print_db(&dbs);
+
+    let pool_future_result = create_pool(&config, None);
+
+    match block_on(pool_future_result) {
+        Ok(pool) => {
+            let pools = create_pools(&config, &dbs, &pool);
+        },
+        Err(e) => println!("Pool could't be created: {e}")
+    }
+}
+
+fn print_db(dbs: &Vec<DB> ) {
     for db in dbs {
         println!("{}", db.name);
 
-        for table in db.tables {
+        let tables = &db.tables;
+
+        for table in tables {
             println!("{}", table.name);
             println!("{}", table.path);
         }
     }
-
-    // let pool_future_result = create_pool(&config, None);
-
-    // match block_on(pool_future_result) {
-    //     Ok(pool) => {
-    //         let pools = create_pools(&config, &dbs, &pool);
-    //     },
-    //     Err(e) => println!("Pool could't be created: {e}")
-    // }
 }
