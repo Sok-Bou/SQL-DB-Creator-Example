@@ -1,6 +1,6 @@
 mod secure;
 
-use sql_db_creator::{ create, Config, DBType };
+use sql_db_creator::{ Config, create_mysql };
 use secure::Credentials;
 
 fn main() {
@@ -13,5 +13,5 @@ fn main() {
         host: credentials.host
     };
 
-    create(DBType::MySql, config);
+    create_mysql(config);
 }

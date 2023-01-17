@@ -87,6 +87,8 @@ pub fn setup(db_type: DBType, config: Config) {
 
     print_db(&dbs);
 
+
+
     let pool_future_result = create_pool(&config, None);
 
     match block_on(pool_future_result) {

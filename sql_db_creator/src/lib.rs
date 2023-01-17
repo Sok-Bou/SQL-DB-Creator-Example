@@ -1,10 +1,16 @@
-mod sql_db_creator;
+#[path = "creator_mysql.rs"]
+mod creator_mysql;
 
-pub use sql_db_creator:: { DBType, Config };
-use sql_db_creator:: { setup };
+mod database;
 
-pub fn create(db_type: DBType, config: Config) {
+pub use creator_mysql::{ DBType, Config };
 
-    setup(db_type, config);
+// pub fn create(db_type: DBType, config: Config) {
+
+//     creator_mysqlsetup(db_type, config);
+// }
+
+pub fn create_mysql(config: Config) {
+
+    creator_mysql::setup(config);
 }
-
