@@ -4,10 +4,8 @@ mod database;
 #[path = "util.rs"]
 mod util;
 
-
 use database::DB;
 use util::sub_paths;
-use crate::secure::Credentials;
 
 use futures::executor::block_on;
 
@@ -19,12 +17,22 @@ use sqlx::Error;
 use sqlx::mysql::MySqlQueryResult;
 // use sqlx::postgres::PgPoolOptions;
 
-fn db_url(db_name: Option<&str>) -> String {
-    let credentials = Credentials::new();
+pub struct Config {
+    pub user: String,
+    pub password: String,
+    pub host: String
+}
 
-    let user = credentials.user;
-    let password = credentials.password;
-    let host = credentials.host;
+pub enum DBType {
+    MySql,
+    SQLight,
+    PostgreSQL
+}
+
+fn db_url(config: &Config, db_name: Option<&str>) -> String {
+    let user = &config.user;
+    let password = &config.password;
+    let host = &config.host;
 
     match db_name {
         Some(db_name) => return format!("mysql://{user}:{password}@{host}/{db_name}"),
@@ -32,13 +40,13 @@ fn db_url(db_name: Option<&str>) -> String {
     }
 }
 
-async fn create_pool(db_name: Option<&str>) -> Result<Pool<MySql>, Error> {
-    let url = db_url(db_name);
+async fn create_pool(config: &Config, db_name: Option<&str>) -> Result<Pool<MySql>, Error> {
+    let url = db_url(config, db_name);
 
     MySqlPool::connect(&url).await
 }
 
-fn create_pools(dbs: &Vec<DB>, pool: &Pool<MySql>) -> Vec::<Pool<MySql>> {
+fn create_pools(config: &Config, dbs: &Vec<DB>, pool: &Pool<MySql>) -> Vec::<Pool<MySql>> {
     let mut pools: Vec::<Pool<MySql>>  = Vec::new();
 
     for db in dbs {
@@ -46,7 +54,7 @@ fn create_pools(dbs: &Vec<DB>, pool: &Pool<MySql>) -> Vec::<Pool<MySql>> {
             Ok(_) => {
                 println!("Database created: {}", &db.name);
 
-                match block_on(create_pool(Some(&db.name))) {
+                match block_on(create_pool(config, Some(&db.name))) {
                     Ok(pool) => pools.push(pool),
                     Err(e) => println!("Something went wron by trying to create a pool: {e}")
                 }
@@ -63,18 +71,6 @@ async fn create_db(name: &str, pool: &Pool<MySql>) -> Result<MySqlQueryResult, E
     sqlx::query(&query).execute(pool).await
 }
 
-pub struct Config {
-    pub user: String,
-    pub password: String,
-    pub host: String
-}
-
-pub enum DBType {
-    MySql,
-    SQLight,
-    PostgreSQL
-}
-
 pub fn setup(db_type: DBType, config: Option<Config>) {
     let db_name_paths = match sub_paths("./src/db/") {
         Ok(paths) => paths,
@@ -89,21 +85,21 @@ pub fn setup(db_type: DBType, config: Option<Config>) {
         dbs.push(DB::new(&db_name_path))
     }
 
-    // for db in dbs {
-    //     println!("{}", db.name);
+    for db in dbs {
+        println!("{}", db.name);
 
-    //     for table in db.tables {
-    //         println!("{}", table.name);
-    //         println!("{}", table.path);
-    //     }
-    // }
-
-    let pool_future_result = create_pool(None);
-
-    match block_on(pool_future_result) {
-        Ok(pool) => {
-            let pools = create_pools(&dbs, &pool);
-        },
-        Err(e) => println!("Pool could't be created: {e}")
+        for table in db.tables {
+            println!("{}", table.name);
+            println!("{}", table.path);
+        }
     }
+
+    // let pool_future_result = create_pool(&config, None);
+
+    // match block_on(pool_future_result) {
+    //     Ok(pool) => {
+    //         let pools = create_pools(&config, &dbs, &pool);
+    //     },
+    //     Err(e) => println!("Pool could't be created: {e}")
+    // }
 }

@@ -1,16 +1,17 @@
-use sql_db_creator::test;
+mod secure;
+
+use sql_db_creator::{ create, Config };
+use secure::Credentials;
 
 fn main() {
 
-    // let credentials = Credentials::new();
+    let credentials = Credentials::new();
 
-    // let config = Config {
-    //     user: credentials.user,
-    //     password: credentials.password,
-    //     host: credentials.host
-    // };
-    
-    // setup(DBType::MySql, Some(config));
+    let config = Config {
+        user: credentials.user,
+        password: credentials.password,
+        host: credentials.host
+    };
 
-    test();
+    create(config);
 }

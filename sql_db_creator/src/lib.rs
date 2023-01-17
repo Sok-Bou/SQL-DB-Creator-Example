@@ -1,22 +1,10 @@
-// mod sql_db_creator;
-// mod secure;
+mod sql_db_creator;
 
-// use secure::Credentials;
-// use sql_db_creator::{ DBType, Config, setup };
+pub use sql_db_creator:: { DBType, Config };
+use sql_db_creator:: { setup };
 
-// fn main2() {
-
-//     let credentials = Credentials::new();
-
-//     let config = Config {
-//         user: credentials.user,
-//         password: credentials.password,
-//         host: credentials.host
-//     };
+pub fn create(config: Config) {
     
-//     setup(DBType::MySql, Some(config));
-// }
-
-pub fn test() {
-    println!("Test");
+    setup(DBType::MySql, Some(config));
 }
+
