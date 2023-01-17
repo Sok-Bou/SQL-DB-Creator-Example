@@ -23,12 +23,6 @@ pub struct Config {
     pub host: String
 }
 
-pub enum DBType {
-    MySql,
-    SQLight,
-    PostgreSQL
-}
-
 fn db_url(config: &Config, db_name: Option<&str>) -> String {
     let user = &config.user;
     let password = &config.password;
@@ -86,8 +80,6 @@ pub fn setup(config: Config) {
     }
 
     print_db(&dbs);
-
-
 
     let pool_future_result = create_pool(&config, None);
 
