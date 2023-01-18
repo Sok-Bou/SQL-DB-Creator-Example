@@ -41,6 +41,18 @@ impl DBs {
             for table in tables {
                 println!("{}", table.name);
                 println!("{}", table.path);
+
+                let scheme = &table.scheme;
+                for (key, value) in scheme {
+                    println!("    {key}, {value}");
+                }
+
+                let data = &table.data;
+                for data_set in data {
+                    for (key, value) in data_set {
+                        println!("        {key}, {value}");
+                    }
+                }
             }
         }
     }

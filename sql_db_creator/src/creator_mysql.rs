@@ -1,10 +1,6 @@
-#[path = "db.rs"]
-mod db;
-
 #[path = "dbs.rs"]
 mod dbs;
 
-use db::DB;
 use dbs::DBs;
 
 use futures::executor::block_on;
@@ -83,7 +79,7 @@ fn create_dbs(config: &Config, dbs: &DBs, pool: &Pool<MySql>) -> Vec::<Pool<MySq
 pub fn setup(config: Config) {
     let dbs = DBs::new();
 
-    //dbs.print_db();
+    dbs.print_db();
 
     let pool_future_result = create_connection(&config);
 
