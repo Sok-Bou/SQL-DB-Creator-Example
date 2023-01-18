@@ -5,7 +5,8 @@ mod db;
 mod util;
 
 use util::sub_paths;
-use db::DB;
+pub use db::DB;
+pub use db::Table;
 
 pub struct DBs {
     pub dbs: Vec<DB>,

@@ -99,7 +99,7 @@ impl DB {
             let mut data: Vec<HashMap<String, String>> = Vec::new();
             match fs::read_to_string(&table_name_path) {
                 Ok(content) => {
-                    println!("{content}");
+                    //println!("{content}");
                     scheme = create_scheme(&content);
                     data = create_data(&content);
                 },
