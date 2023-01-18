@@ -29,6 +29,21 @@ fn print_type_of<T>(_: &T) {
 fn create_scheme(content: &str) -> HashMap<String, String> {
     let mut scheme: HashMap<String, String> = HashMap::new();
 
+    let value_hashmap: HashMap<String, Value> = serde_json::from_str(content).unwrap();
+
+    for (key, value) in value_hashmap {
+        if key == "scheme" {
+            match value {
+                Value::Object(obj) => {
+                    for i in &obj {
+                        scheme.insert(i.0.to_string(), i.1.to_string());
+                    }               
+                },
+                _ => ()
+            }
+        }
+    }
+
     scheme
 }
 
@@ -38,13 +53,9 @@ fn create_data(content: &str) -> Vec<HashMap<String, String>> {
     let value_hashmap: HashMap<String, Value> = serde_json::from_str(content).unwrap();
 
     for (key, value) in value_hashmap {
-        match value {
-            Value::Null => println!("key: {key}, value: Null"),
-            Value::Bool(b) => println!("key: {key}, value (bool): {b}"),
-            Value::Number(number) =>  println!("key: {key}, value (number): {number}"),
-            Value::String(string) =>  println!("key: {key}, value (string): {string}"),
-            Value::Array(array) => {
-                if key == "data" {
+        if key == "data" {
+            match value {
+                Value::Array(array) => {
                     for a in array {    
                         let v: HashMap<String, Value> = serde_json::from_value(a).unwrap();
                         let mut data_set: HashMap<String, String> = HashMap::new();
@@ -55,9 +66,9 @@ fn create_data(content: &str) -> Vec<HashMap<String, String>> {
 
                         data.push(data_set);
                     }
-                }
-            },
-            Value::Object(obj) => println!("key: {key}, value (obj): {:?}", obj)
+                },
+                _ => ()
+            }
         }
     }
 

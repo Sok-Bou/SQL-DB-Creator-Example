@@ -49,6 +49,7 @@ impl DBs {
 
                 let data = &table.data;
                 for data_set in data {
+                    println!(" ------ ");
                     for (key, value) in data_set {
                         println!("        {key}, {value}");
                     }
