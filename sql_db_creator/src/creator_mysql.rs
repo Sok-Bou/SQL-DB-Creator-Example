@@ -1,9 +1,13 @@
 #[path = "dbs.rs"]
 mod dbs;
 
+#[path = "util.rs"]
+mod util;
+
 use dbs::DBs;
 use dbs::DB;
 use dbs::Table;
+use util::reduce_str;
 
 use futures::executor::block_on;
 use serde_json::{ Value };
@@ -116,11 +120,8 @@ async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQue
         query.push_str(&line);
         column_names.push(&key);
     }
-
-    let query_str = &query;
-    let query_str_new = &query_str[0..query_str.len() - 2];
     
-    let mut query = String::from(query_str_new);
+    let mut query = reduce_str(&query, 0, 2);
 
     query.push_str(") VALUES ");
 
@@ -153,22 +154,14 @@ async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQue
                 }
             }
         }
-        
-        let query_str = &query;
-        let query_str_new = &query_str[0..query_str.len() - 2];
 
-        let mut query_new = String::from(query_str_new);
-
+        let mut query_new = reduce_str(&query, 0, 2);
         query_new.push_str("), ");
 
         query = query_new;
     }
-
-    let query_str = &query;
-    let query_str_new = &query_str[0..query_str.len() - 2];
     
-    let mut query = String::from(query_str_new);
-
+    let mut query = reduce_str(&query, 0, 2);
     query.push_str(";");
 
     sqlx::query(&query).execute(pool).await

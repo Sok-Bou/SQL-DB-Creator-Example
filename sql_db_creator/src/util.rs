@@ -54,3 +54,9 @@ pub fn get_first_of_split<'a>(text: &'a str, seperator: &'a str) -> Option<&'a s
 
     None
 }
+
+pub fn reduce_str(string_slice: &str, start: usize, end: usize) -> String {
+    let string_slice_new = &string_slice[start..string_slice.len() - end];
+    
+    String::from(string_slice_new)
+}
