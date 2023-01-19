@@ -14,7 +14,7 @@ pub struct Table {
     pub name: String,
     pub path: String,
     pub scheme: HashMap<String, String>,
-    pub data: Vec<HashMap<String, String>>
+    pub data: Vec<HashMap<String, Value>>
 }
 
 pub struct DB {
@@ -47,8 +47,8 @@ fn create_scheme(content: &str) -> HashMap<String, String> {
     scheme
 }
 
-fn create_data(content: &str) -> Vec<HashMap<String, String>> {
-    let mut data: Vec<HashMap<String, String>> = Vec::new();
+fn create_data(content: &str) -> Vec<HashMap<String, Value>> {
+    let mut data: Vec<HashMap<String, Value>> = Vec::new();
 
     let value_hashmap: HashMap<String, Value> = serde_json::from_str(content).unwrap();
 
@@ -57,14 +57,7 @@ fn create_data(content: &str) -> Vec<HashMap<String, String>> {
             match value {
                 Value::Array(array) => {
                     for a in array {    
-                        let v: HashMap<String, Value> = serde_json::from_value(a).unwrap();
-                        let mut data_set: HashMap<String, String> = HashMap::new();
-
-                        for (key, value) in v {
-                            data_set.insert(key, value.to_string());
-                        }
-
-                        data.push(data_set);
+                        data.push(serde_json::from_value(a).unwrap());
                     }
                 },
                 _ => ()
@@ -96,7 +89,7 @@ impl DB {
         for table_name_path in table_name_paths {
 
             let mut scheme: HashMap<String, String> = HashMap::new();
-            let mut data: Vec<HashMap<String, String>> = Vec::new();
+            let mut data: Vec<HashMap<String, Value>> = Vec::new();
             match fs::read_to_string(&table_name_path) {
                 Ok(content) => {
                     //println!("{content}");

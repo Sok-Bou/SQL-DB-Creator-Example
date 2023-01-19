@@ -11,14 +11,14 @@
             "name": "Germany",
             "polity_type": "Bicameral",
             "constitution": "Basic Law for Germany",
-            "ministries": "15",
+            "ministries": 15,
             "capital": "Berlin"
         },
         {
             "name": "United States of America",
             "polity_type": "Bicameral",
             "constitution": "United States Constitution",
-            "ministries": "15",
+            "ministries": 15,
             "capital": "Washington, D.C."
         }
     ]

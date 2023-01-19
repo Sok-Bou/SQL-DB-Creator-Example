@@ -6,6 +6,7 @@ use dbs::DB;
 use dbs::Table;
 
 use futures::executor::block_on;
+use serde_json::{ Value };
 
 use sqlx::mysql::MySqlPool;
 use sqlx::Pool;
@@ -103,15 +104,17 @@ async fn create_table(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQueryRes
 }
 
 async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQueryResult, Error> {
+    let mut column_names: Vec<&str> = Vec::new();
     let mut query = String::from("INSERT INTO ");
     query.push_str(&table.name);
-    query.push_str("(");
+    query.push_str(" (");
 
     let scheme = &table.scheme;
     for (key, _) in scheme {
 
         let line = format!("{}, ", key);
         query.push_str(&line);
+        column_names.push(&key);
     }
 
     let query_str = &query;
@@ -123,13 +126,34 @@ async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQue
 
     for data_set in &table.data {
         query.push_str("(");
-        for (_, value) in data_set {
-
-            let value_new = &value[1..value.len() - 1];
-
-            let line = format!("{}, ", value_new);
-            query.push_str(&line);
+        for name in &column_names {
+            for (key, value) in data_set {
+                if key == name {
+                    let mut value_new_string = String::from("");
+    
+                    match value {
+                        Value::Null => println!("Null"),
+                        Value::Bool(b) => {
+                            value_new_string.push_str(&b.to_string());
+                        },
+                        Value::Number(number) => {
+                            value_new_string.push_str(&number.to_string());
+                        },
+                        Value::String(string) => {
+                            value_new_string.push('\'');
+                            value_new_string.push_str(string);
+                            value_new_string.push('\'');
+                        },
+                        Value::Array(value) => println!("value: {:?}", value), // println!("value: {value}"),
+                        Value::Object(obj) => println!("obj: {:?}", obj)  // println!("obj: {obj}")
+                    }
+        
+                    let line = format!("{}, ", value_new_string);
+                    query.push_str(&line);
+                }
+            }
         }
+        
         let query_str = &query;
         let query_str_new = &query_str[0..query_str.len() - 2];
 
@@ -147,10 +171,6 @@ async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQue
 
     query.push_str(";");
 
-    println!("{query}");
-
-    //return Err(Error::PoolClosed);
-
     sqlx::query(&query).execute(pool).await
 }
 
@@ -159,47 +179,61 @@ pub fn setup(config: Config) {
 
     //dbs.print_db();
 
-    let pool_future_result = create_connection(&config);
+    let connection_pool_future_result = create_connection(&config);
 
-    match block_on(pool_future_result) {
-        Ok(pool) => {
+    match block_on(connection_pool_future_result) {
+        Ok(connection_pool) => {
 
             for db in &dbs.dbs {
-                match block_on(drop_db(&db.name, &pool)) {
+                match block_on(drop_db(&db.name, &connection_pool)) {
                     Ok(_) => {
-                        println!("DB droped",);
+                        println!("Database \"{}\" dropped if existed", &db.name);
                     },
-                    Err(e) => println!("{:?}", e)
+                    Err(e) => {
+                        println!("Database \"{}\" couldn't be dropped", &db.name);
+                        println!("{:?}", e);
+                    }
                 }
             }
             
-            let pools = create_pools_for_dbs(&config, &dbs, &pool);
+            let pools = create_pools_for_dbs(&config, &dbs, &connection_pool);
             for (pool, db) in pools {
 
                 let tables = &db.tables;
                 for table in tables {
 
-                    let name = &table.name;
+                    let db_name = &db.name;
+                    let table_name = &table.name;
+
                     let table_result = create_table(&pool, &table);
 
                     match block_on(table_result) {
                         Ok(_) => {
-                            println!("New Table with name {} created", name);
+                            println!("New Table with name \"{}\" created in Database \"{}\".", table_name, db_name);
 
                             let data_result = create_table_data(&pool, &table);
 
                             match block_on(data_result) {
                                 Ok(_) => {
-                                    println!("New Data created in Table with name {} created", name);
+                                    println!("Table \"{}\" of Database \"{}\" successfully filled with datasets.", table_name, db_name);
                                 },
-                                Err(e) => println!("New Data in Table \"{}\" couldn't be created. Error: {}", name, e)
+                                Err(e) => {
+                                    println!("Table \"{}\" of Database \"{}\" couldn't be filled with datasets.", table_name, db_name);
+                                    println!("{:?}", e);
+                                }
                             }
                         },
-                        Err(e) => println!("Table with name \"{}\" couldn't be created. Error: {}", name, e)
+                        Err(e) => {
+                            println!("Table with name \"{}\" couldn't be created.", table_name);
+                            println!("{:?}", e);
+                        }
                     }
                 }
             }
         },
-        Err(e) => println!("One or mor pools couldn't be created")
+        Err(e) => {
+            println!("One or mor pools couldn't be created");
+            println!("{:?}", e);
+        }
     }
 }
