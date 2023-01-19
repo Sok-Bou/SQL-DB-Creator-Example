@@ -178,47 +178,39 @@ pub fn setup(config: Config) {
         Ok(connection_pool) => {
 
             for db in &dbs.dbs {
-                match block_on(drop_db(&db.name, &connection_pool)) {
-                    Ok(_) => {
-                        println!("Database \"{}\" dropped if existed", &db.name);
-                    },
-                    Err(e) => {
-                        println!("Database \"{}\" couldn't be dropped", &db.name);
-                        println!("{:?}", e);
-                    }
+                if let Err(e) = block_on(drop_db(&db.name, &connection_pool)) {
+                    println!("Database \"{}\" couldn't be dropped", &db.name);
+                    println!("{:?}", e);
+                } else {
+                    println!("Database \"{}\" dropped if existed", &db.name);
                 }
             }
             
             let pools = create_pools_for_dbs(&config, &dbs, &connection_pool);
             for (pool, db) in pools {
 
+                let db_name = &db.name;
                 let tables = &db.tables;
-                for table in tables {
 
-                    let db_name = &db.name;
+                for table in tables {
+                    
                     let table_name = &table.name;
 
                     let table_result = create_table(&pool, &table);
 
-                    match block_on(table_result) {
-                        Ok(_) => {
-                            println!("New Table with name \"{}\" created in Database \"{}\".", table_name, db_name);
+                    if let Err(e) = block_on(table_result) {
+                        println!("Table with name \"{}\" couldn't be created.", table_name);
+                        println!("{:?}", e);
+                    } else {
+                        println!("New Table with name \"{}\" created in Database \"{}\".", table_name, db_name);
 
-                            let data_result = create_table_data(&pool, &table);
+                        let data_result = create_table_data(&pool, &table);
 
-                            match block_on(data_result) {
-                                Ok(_) => {
-                                    println!("Table \"{}\" of Database \"{}\" successfully filled with datasets.", table_name, db_name);
-                                },
-                                Err(e) => {
-                                    println!("Table \"{}\" of Database \"{}\" couldn't be filled with datasets.", table_name, db_name);
-                                    println!("{:?}", e);
-                                }
-                            }
-                        },
-                        Err(e) => {
-                            println!("Table with name \"{}\" couldn't be created.", table_name);
+                        if let Err(e) = block_on(data_result) {
+                            println!("Table \"{}\" of Database \"{}\" couldn't be filled with datasets.", table_name, db_name);
                             println!("{:?}", e);
+                        } else {
+                            println!("Table \"{}\" of Database \"{}\" successfully filled with datasets.", table_name, db_name);
                         }
                     }
                 }
