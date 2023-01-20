@@ -1,17 +1,17 @@
 mod secure;
 
-use sql_db_creator::{ ConfigMySql, create_mysql };
+use sql_db_creator::{ ConfigPostgresSql, create_postgres_sql };
 use secure::Credentials;
 
 fn main() {
 
     let credentials = Credentials::new();
 
-    let config = Config {
+    let config = ConfigPostgresSql {
         user: credentials.user,
         password: credentials.password,
         host: credentials.host
     };
 
-    create_mysql(config);
+    create_postgres_sql(config);
 }

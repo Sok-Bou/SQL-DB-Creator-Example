@@ -18,15 +18,14 @@ use sqlx::MySql;
 use sqlx::Error;
 
 use sqlx::mysql::MySqlQueryResult;
-// use sqlx::postgres::PgPoolOptions;
 
-pub struct Config {
+pub struct ConfigMySql {
     pub user: String,
     pub password: String,
     pub host: String
 }
 
-async fn create_connection(config: &Config) -> Result<Pool<MySql>, Error> {
+async fn create_connection(config: &ConfigMySql) -> Result<Pool<MySql>, Error> {
     let user = &config.user;
     let password = &config.password;
     let host = &config.host;
@@ -46,7 +45,7 @@ async fn drop_db(name: &str, pool: &Pool<MySql>) -> Result<MySqlQueryResult, Err
     sqlx::query(&query).execute(pool).await
 }
 
-async fn create_pool_for_db(config: &Config, db_name: &str) -> Result<Pool<MySql>, Error> {
+async fn create_pool_for_db(config: &ConfigMySql, db_name: &str) -> Result<Pool<MySql>, Error> {
     let user = &config.user;
     let password = &config.password;
     let host = &config.host;
@@ -56,7 +55,7 @@ async fn create_pool_for_db(config: &Config, db_name: &str) -> Result<Pool<MySql
     MySqlPool::connect(&url).await
 }
 
-fn create_pools_for_dbs<'a>(config: &Config, dbs: &'a DBs, pool: &Pool<MySql>) -> Vec::<(Pool<MySql>, &'a DB)> {
+fn create_pools_for_dbs<'a>(config: &ConfigMySql, dbs: &'a DBs, pool: &Pool<MySql>) -> Vec::<(Pool<MySql>, &'a DB)> {
     let mut pools: Vec::<(Pool<MySql>, &DB)> = Vec::new();
 
     let dbs = &dbs.dbs;
@@ -145,8 +144,8 @@ async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQue
                             value_new_string.push_str(string);
                             value_new_string.push('\'');
                         },
-                        Value::Array(value) => println!("value: {:?}", value), // println!("value: {value}"),
-                        Value::Object(obj) => println!("obj: {:?}", obj)  // println!("obj: {obj}")
+                        Value::Array(value) => println!("value: {:?}", value),
+                        Value::Object(obj) => println!("obj: {:?}", obj)
                     }
         
                     let line = format!("{}, ", value_new_string);
@@ -167,7 +166,7 @@ async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQue
     sqlx::query(&query).execute(pool).await
 }
 
-pub fn setup(config: Config) {
+pub fn setup(config: ConfigMySql) {
     let dbs = DBs::new();
 
     //dbs.print_db();
