@@ -7,7 +7,7 @@ fn main() {
 
     let credentials = Credentials::new();
 
-    let config = Config {
+    let config = ConfigMySql {
         user: credentials.user,
         password: credentials.password,
         host: credentials.host
