@@ -1,41 +1,12 @@
-// mod secure;
-
-// use sql_db_creator::{ ConfigPostgresSql, create_postgres_sql };
-// use secure::Credentials;
-
-// fn main() {
-
-//     let credentials = Credentials::new();
-
-//     let config = ConfigPostgresSql {
-//         user: credentials.user,
-//         password: credentials.password,
-//         host: credentials.host
-//     };
-
-//     create_postgres_sql(config);
-// }
-
-mod secure;
-use secure::Credentials;
-use sql_db_creator::{ ConfigPostgresSql, setup };
+use sql_db_creator::{ DBType, Config, setup };
 
 fn main() {
 
-    let credentials = Credentials::new();
-
-    let config = ConfigPostgresSql {
-        user: credentials.user,
-        password: credentials.password,
-        host: credentials.host
+    let config = Config {
+        user: String::from("postgres"),
+        password: String::from("admin"),
+        host: String::from("localhost")
     };
 
-    setup(config);
+    setup(DBType::PostgresSql, config);
 }
-
-// use sql_db_creator::{ module3_fu, call_module3_fn };
-
-// fn main() {
-//     module3_fu();
-//     call_module3_fn();
-// }

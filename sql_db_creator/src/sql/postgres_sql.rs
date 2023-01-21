@@ -1,5 +1,6 @@
 use crate::db::{ DBs, DB, Table };
 use crate::util::{ reduce_str };
+use crate::Config;
 
 use futures::executor::block_on;
 use serde_json::{ Value };
@@ -11,13 +12,7 @@ use sqlx::Error;
 
 use sqlx::postgres::PgQueryResult;
 
-pub struct ConfigPostgresSql {
-    pub user: String,
-    pub password: String,
-    pub host: String
-}
-
-async fn create_connection(config: &ConfigPostgresSql) -> Result<Pool<Postgres>, Error> {
+async fn create_connection(config: &Config) -> Result<Pool<Postgres>, Error> {
     let user = &config.user;
     let password = &config.password;
     let host = &config.host;
@@ -37,7 +32,7 @@ async fn drop_db(name: &str, pool: &Pool<Postgres>) -> Result<PgQueryResult, Err
     sqlx::query(&query).execute(pool).await
 }
 
-async fn create_pool_for_db(config: &ConfigPostgresSql, db_name: &str) -> Result<Pool<Postgres>, Error> {
+async fn create_pool_for_db(config: &Config, db_name: &str) -> Result<Pool<Postgres>, Error> {
     let user = &config.user;
     let password = &config.password;
     let host = &config.host;
@@ -47,7 +42,7 @@ async fn create_pool_for_db(config: &ConfigPostgresSql, db_name: &str) -> Result
     PgPool::connect(&url).await
 }
 
-fn create_pools_for_dbs<'a>(config: &ConfigPostgresSql, dbs: &'a DBs, pool: &Pool<Postgres>) -> Vec::<(Pool<Postgres>, &'a DB)> {
+fn create_pools_for_dbs<'a>(config: &Config, dbs: &'a DBs, pool: &Pool<Postgres>) -> Vec::<(Pool<Postgres>, &'a DB)> {
     let mut pools: Vec::<(Pool<Postgres>, &DB)> = Vec::new();
 
     let dbs = &dbs.dbs;
@@ -160,10 +155,8 @@ async fn create_table_data(pool: &Pool<Postgres>, table: &Table) -> Result<PgQue
     sqlx::query(&query).execute(pool).await
 }
 
-pub fn setup(config: ConfigPostgresSql) {
+pub fn setup_progres_sql(config: Config) {
     let dbs = DBs::new();
-
-    //dbs.print_db();
 
     let connection_pool_future_result = create_connection(&config);
 

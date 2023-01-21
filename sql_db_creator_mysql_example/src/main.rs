@@ -1,17 +1,17 @@
 mod secure;
-
-use sql_db_creator::{ ConfigMySql, create_mysql };
 use secure::Credentials;
+
+use sql_db_creator::{ DBType, Config, setup };
 
 fn main() {
 
     let credentials = Credentials::new();
 
-    let config = ConfigMySql {
+    let config = Config {
         user: credentials.user,
         password: credentials.password,
         host: credentials.host
     };
 
-    create_mysql(config);
+    setup(DBType::MySql, config);
 }
