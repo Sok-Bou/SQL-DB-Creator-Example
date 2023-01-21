@@ -1,12 +1,5 @@
-#[path = "db.rs"]
-mod db;
-
-#[path = "util.rs"]
-mod util;
-
-use util::sub_paths;
-pub use db::DB;
-pub use db::Table;
+use crate::sql::db::db::{ DB };
+use crate::sql::db::util::{ sub_paths };
 
 pub struct DBs {
     pub dbs: Vec<DB>,

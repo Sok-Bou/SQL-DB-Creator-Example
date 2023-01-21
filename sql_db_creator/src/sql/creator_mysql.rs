@@ -1,13 +1,4 @@
-#[path = "dbs.rs"]
-mod dbs;
-
-#[path = "util.rs"]
-mod util;
-
-use dbs::DBs;
-use dbs::DB;
-use dbs::Table;
-use util::reduce_str;
+use crate::sql::db::{ DBs, DB, Table, reduce_str };
 
 use futures::executor::block_on;
 use serde_json::{ Value };
