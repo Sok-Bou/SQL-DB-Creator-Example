@@ -1,5 +1,5 @@
 use crate::creator::db::db::{ DB };
-use crate::creator::db::util::{ sub_paths };
+use crate::creator::util::{ sub_paths };
 
 pub struct DBs {
     pub dbs: Vec<DB>,
