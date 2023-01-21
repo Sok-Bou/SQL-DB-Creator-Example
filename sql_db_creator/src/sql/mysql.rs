@@ -1,4 +1,5 @@
-use crate::creator::db::{ DBs, DB, Table, reduce_str };
+use crate::db::{ DBs, DB, Table };
+use crate::util::{ reduce_str };
 
 use futures::executor::block_on;
 use serde_json::{ Value };

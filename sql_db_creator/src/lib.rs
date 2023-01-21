@@ -15,9 +15,11 @@
 //     creator_postgres_sql::setup(config);
 // }
 
-mod creator;
+mod db;
+mod sql;
+mod util;
 
-pub use creator::{ ConfigPostgresSql, setup };
+pub use sql::{ ConfigPostgresSql, setup };
 
 // mod module1;
 
