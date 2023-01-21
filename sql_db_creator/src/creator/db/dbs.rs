@@ -25,6 +25,7 @@ impl DBs {
         }
     }
 
+    #[allow(dead_code)]
     pub fn print_db(&self) {
         let dbs = &self.dbs;
         for db in dbs {

@@ -16,10 +16,6 @@ pub struct DB {
     pub tables: Vec<Table>
 }
 
-fn print_type_of<T>(_: &T) {
-    println!("{}", std::any::type_name::<T>())
-}
-
 fn create_scheme(content: &str) -> HashMap<String, String> {
     let mut scheme: HashMap<String, String> = HashMap::new();
 
@@ -125,20 +121,4 @@ impl DB {
             tables: tables
         }
     }
-}
-
-struct NewExport {
-    first_name: String,
-    last_name: String,
-    gender: String,
-    date_of_birth: String,
-    address: String
-}
-
-struct Export {
-    first_name: String,
-    last_name: String,
-    gender: String,
-    date_of_birth: String,
-    address: NewExport
 }
