@@ -2,7 +2,7 @@ use crate::util::{ sub_paths, get_last_of_split, get_first_of_split };
 
 use std::fs;
 use std::collections::HashMap;
-use serde_json::{ Value };
+use serde_json::Value;
 
 pub struct Table {
     pub name: String,

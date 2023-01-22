@@ -1,16 +1,11 @@
 use crate::db::{ DBs, DB, Table };
-use crate::util::{ reduce_str };
+use crate::util::reduce_str;
 use crate::Config;
 
 use futures::executor::block_on;
-use serde_json::{ Value };
-
-use sqlx::postgres::PgPool;
-use sqlx::Pool;
-use sqlx::Postgres;
-use sqlx::Error;
-
-use sqlx::postgres::PgQueryResult;
+use serde_json::Value;
+use sqlx::postgres::{ PgPool, PgQueryResult };
+use sqlx::{Pool, Postgres, Error };
 
 async fn create_connection(config: &Config) -> Result<Pool<Postgres>, Error> {
     let user = &config.user;
@@ -90,8 +85,6 @@ async fn create_table(pool: &Pool<Postgres>, table: &Table) -> Result<PgQueryRes
 
     query.push_str(");");
 
-    println!("{query}");
-
     sqlx::query(&query).execute(pool).await
 }
 
@@ -157,7 +150,6 @@ async fn create_table_data(pool: &Pool<Postgres>, table: &Table) -> Result<PgQue
 
 pub fn setup_progres_sql(config: Config) {
     let dbs = DBs::new();
-
     let connection_pool_future_result = create_connection(&config);
 
     match block_on(connection_pool_future_result) {
@@ -181,7 +173,6 @@ pub fn setup_progres_sql(config: Config) {
                 for table in tables {
                     
                     let table_name = &table.name;
-
                     let table_result = create_table(&pool, &table);
 
                     if let Err(e) = block_on(table_result) {

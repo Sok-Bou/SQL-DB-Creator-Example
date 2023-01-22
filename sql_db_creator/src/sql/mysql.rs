@@ -1,16 +1,11 @@
 use crate::db::{ DBs, DB, Table };
-use crate::util::{ reduce_str };
+use crate::util::reduce_str;
 use crate::Config;
 
 use futures::executor::block_on;
-use serde_json::{ Value };
-
-use sqlx::mysql::MySqlPool;
-use sqlx::Pool;
-use sqlx::MySql;
-use sqlx::Error;
-
-use sqlx::mysql::MySqlQueryResult;
+use serde_json::Value;
+use sqlx::mysql::{ MySqlPool, MySqlQueryResult };
+use sqlx::{ Pool, MySql, Error };
 
 async fn create_connection(config: &Config) -> Result<Pool<MySql>, Error> {
     let user = &config.user;
@@ -155,7 +150,6 @@ async fn create_table_data(pool: &Pool<MySql>, table: &Table) -> Result<MySqlQue
 
 pub fn setup_my_sql(config: Config) {
     let dbs = DBs::new();
-
     let connection_pool_future_result = create_connection(&config);
 
     match block_on(connection_pool_future_result) {
@@ -179,7 +173,6 @@ pub fn setup_my_sql(config: Config) {
                 for table in tables {
                     
                     let table_name = &table.name;
-
                     let table_result = create_table(&pool, &table);
 
                     if let Err(e) = block_on(table_result) {
