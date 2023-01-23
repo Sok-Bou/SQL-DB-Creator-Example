@@ -1,0 +1,7 @@
+{
+    "scheme": {
+        "name": "VARCHAR(255)",
+        "continent": "VARCHAR(255)",
+        "country": "VARCHAR(255)"
+    }
+}

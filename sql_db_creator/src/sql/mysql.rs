@@ -181,13 +181,16 @@ pub fn setup_my_sql(config: Config) {
                     } else {
                         println!("New Table with name \"{}\" created in Database \"{}\".", table_name, db_name);
 
-                        let data_result = create_table_data(&pool, &table);
+                        let min_size: usize = 0;
+                        if &table.data.len() > &min_size {
+                            let data_result = create_table_data(&pool, &table);
 
-                        if let Err(e) = block_on(data_result) {
-                            println!("Table \"{}\" of Database \"{}\" couldn't be filled with datasets.", table_name, db_name);
-                            println!("{:?}", e);
-                        } else {
-                            println!("Table \"{}\" of Database \"{}\" successfully filled with datasets.", table_name, db_name);
+                            if let Err(e) = block_on(data_result) {
+                                println!("Table \"{}\" of Database \"{}\" couldn't be filled with datasets.", table_name, db_name);
+                                println!("{:?}", e);
+                            } else {
+                                println!("Table \"{}\" of Database \"{}\" successfully filled with datasets.", table_name, db_name);
+                            }
                         }
                     }
                 }

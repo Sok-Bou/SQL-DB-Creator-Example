@@ -1,0 +1,22 @@
+{
+    "scheme": {
+        "flower_name": "VARCHAR(255)",
+        "scientific_name": "VARCHAR(255)",
+        "place_of_origin": "VARCHAR(255)",
+        "discover_date": "DATE NOT NULL"
+    },
+    "data": [
+        {
+            "flower_name": "Ficus",
+            "scientific_name": "Ficus erecta",
+            "place_of_origin": "Japan and Jeju Island (Korea)",
+            "discover_date": "1786-01-01"
+        },
+        {
+            "flower_name": "Alnus japonica",
+            "scientific_name": "Alnus japonica",
+            "place_of_origin": "Japan, Korea, Taiwan, eastern China, and Russia",
+            "discover_date": "1840-02-01"
+        }
+    ]
+}

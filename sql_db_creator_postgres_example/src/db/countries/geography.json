@@ -4,7 +4,8 @@
         "area": "INTEGER",
         "region": "VARCHAR(255)",
         "costline": "INTEGER",
-        "borders": "INTEGER"
+        "borders": "INTEGER",
+        "is_in_europe": "BOOLEAN"
     },
     "data": [
         {
@@ -12,14 +13,16 @@
             "area": 357021,
             "region": "Central Europe",
             "costline": 2389,
-            "borders": 3714
+            "borders": 3714,
+            "is_in_europe": true
         },
         {
             "name": "United States of America",
             "area": 9826675,
             "region": "North Americs",
             "costline": 19920,
-            "borders": 12191
+            "borders": 12191,
+            "is_in_europe": false
         }
     ]
 }

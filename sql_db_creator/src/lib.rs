@@ -7,7 +7,7 @@ use sql::setup_progres_sql;
 
 /// Holds the login creadentials and the host for the db.
 /// 
-/// The data are been used to setup the url for the db.
+/// The data are been used to setup the url for the db connection.
 /// 
 /// For MySql: mysql://{user}:{password}@{host}
 /// 
