@@ -1,4 +1,7 @@
-Generate sql databases by only configure the data of the databases in json files.
+SQL DB Creator
+==============
+
+*Generate sql databases by only configure the data of the databases in json files*
 
 This are two examples, one for mysql and one for postgressql, of how to use the crate 'sql_db_creator'
 to generate sql databases from only using json files.
@@ -7,7 +10,8 @@ Source code of this lib: https://github.com/Sok-Bou/SQL-DB-Creator
 
 crate: https://crates.io/crates/sql_db_creator
 
-Steps:
+### Steps
+
 1. In the src directory add a folder with name db. It has to be in the src directory and with the 
 name 'db'
 2. Add one or more folders depending on how many databases you want. Most of the time it is one
@@ -34,7 +38,7 @@ By now you folder structure should look like this
 
  ┣ 📜  main.rs  (8)
 
-
+<br>
 
 (1) Required name 'db'
 
@@ -51,6 +55,8 @@ By now you folder structure should look like this
 (7) Table in database 'flowers' with name 'region'
 
 (8) The main file
+
+<br>
 
 4. Now the json files should have a specific structure to generate the columns of the tables. The 
 structure goes like this:
@@ -121,10 +127,14 @@ structure goes like this:
 }
 ```
 
+<br>
+
 In the schema part are the infos to create the schema of the table with column names and data types as they appear in the example above.
 In the data part are the infos to fill the table with our table data.
 The data section is optional. We can only generate the table. Of course in case we fill the table with data, we have to be careful with the values.
 The values should have the right type as given in the schema.
+
+<br>
 
 5. To generate the database run the following code in your main
 
@@ -161,3 +171,24 @@ fn main() {
     setup(DBType::PostgresSql, config);
 }
 ```
+
+<br>
+
+#### License
+
+<sup>
+Licensed under either of <a href="LICENSE-APACHE">Apache License, Version
+2.0</a> or <a href="LICENSE-MIT">MIT license</a> at your option.
+</sup>
+
+<br>
+
+<sub>
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
+be dual licensed as above, without any additional terms or conditions.
+</sub>
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in this crate by you, as defined in the Apache-2.0 license, shall
+be dual licensed as above, without any additional terms or conditions.
+</sub>
