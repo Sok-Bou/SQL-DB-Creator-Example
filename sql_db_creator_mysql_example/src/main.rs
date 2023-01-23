@@ -4,7 +4,7 @@ fn main() {
 
     let config = Config {
         user: String::from("root"),
-        password: String::from("password"),
+        password: String::from("SEMFE_2003"),
         host: String::from("localhost")
     };
 

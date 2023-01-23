@@ -1,5 +1,5 @@
 {
-    "scheme": {
+    "schema": {
         "name": "VARCHAR(255)",
         "polity_type": "VARCHAR(255)",
         "constitution": "VARCHAR(255)",

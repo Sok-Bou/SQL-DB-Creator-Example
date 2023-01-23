@@ -1,5 +1,5 @@
 {
-    "scheme": {
+    "schema": {
         "flower_name": "VARCHAR(255)",
         "scientific_name": "VARCHAR(255)",
         "place_of_origin": "VARCHAR(255)",

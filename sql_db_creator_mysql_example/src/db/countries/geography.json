@@ -1,5 +1,5 @@
 {
-    "scheme": {
+    "schema": {
         "name": "VARCHAR(255)",
         "area": "INT(255)",
         "region": "VARCHAR(255)",
