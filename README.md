@@ -5,6 +5,8 @@ to generate sql databases from only using json files.
 
 Source code of this lib: https://github.com/Sok-Bou/SQL-DB-Creator
 
+crate: https://crates.io/crates/sql_db_creator
+
 Steps:
 1. In the src directory add a folder with name db. It has to be in the src directory and with the 
 name 'db'
